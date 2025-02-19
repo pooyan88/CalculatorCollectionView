@@ -9,7 +9,7 @@ import UIKit
 
 class CalculatorCollectionViewCell: UICollectionViewCell {
 
-    static func getSize(itemsInARow: Int, item: ViewController.Item) -> CGSize {
+    static func getSize(itemsInARow: Int, item: CalculatorViewModel.Item) -> CGSize {
         let totalWidth = UIScreen.main.bounds.width
         let padding: CGFloat = 4
         let itemWidth = (totalWidth - CGFloat(itemsInARow + 1) * padding) / CGFloat(itemsInARow)
@@ -23,7 +23,7 @@ class CalculatorCollectionViewCell: UICollectionViewCell {
 
     struct Config {
         var title: String
-        var backgroundColor: UIColor
+        var backgroundColor: String
     }
 
     @IBOutlet weak var parentView: UIView!
@@ -40,7 +40,7 @@ class CalculatorCollectionViewCell: UICollectionViewCell {
 extension CalculatorCollectionViewCell {
 
     func setup(config: Config) {
-        parentView.backgroundColor = config.backgroundColor
+        parentView.backgroundColor = UIColor(hex: config.backgroundColor)
         label.text = config.title
     }
 }
