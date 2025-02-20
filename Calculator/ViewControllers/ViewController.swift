@@ -44,6 +44,7 @@ extension ViewController {
 
     private func setupCollectionView() {
         collectionView.register(UINib(nibName: "CalculatorCollectionViewCell", bundle: nil), forCellWithReuseIdentifier: "CalculatorCollectionViewCell")
+        collectionView.collectionViewLayout = createLayout()
         collectionView.delegate = self
         collectionView.dataSource = self
     }
@@ -51,6 +52,44 @@ extension ViewController {
     private func reloadCollectionView() {
         collectionView.reloadData()
     }
+
+    private func createLayout() -> UICollectionViewCompositionalLayout {
+        // none zero items size
+        let regularItem = NSCollectionLayoutItem(layoutSize: NSCollectionLayoutSize(widthDimension: .fractionalWidth(0.25),
+                                                                                     heightDimension: .fractionalHeight(1.0)))
+
+        // zero item size
+        let zeroItem = NSCollectionLayoutItem(layoutSize: NSCollectionLayoutSize(widthDimension: .fractionalWidth(0.5),
+                                                                                  heightDimension: .fractionalHeight(1.0)))
+        var rows: [NSCollectionLayoutGroup] = []
+        for _ in 0..<4 {
+            let row = NSCollectionLayoutGroup.horizontal(layoutSize: NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0),
+                                                                                           heightDimension: .absolute(90)),
+                                                        subitems: [regularItem, regularItem, regularItem, regularItem])
+            row.interItemSpacing = .fixed(5) // Horizontal spacing between none zero items row
+            rows.append(row)
+        }
+
+        // Create the 5th row (with "0" item includes 2 columns)
+        let row5 = NSCollectionLayoutGroup.horizontal(layoutSize: NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0),
+                                                                                         heightDimension: .absolute(90)),
+                                                      subitems: [zeroItem, regularItem, regularItem]) // "0" spans two columns
+        row5.interItemSpacing = .fixed(5) // Horizontal spacing between items in the same row
+        rows.append(row5)
+
+        // Combine all rows into a vertical stack (a single group)
+        let fullGroup = NSCollectionLayoutGroup.vertical(layoutSize: NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0),
+                                                                                          heightDimension: .estimated(500)),
+                                                         subitems: rows)
+
+        fullGroup.interItemSpacing = .fixed(5)
+
+        let section = NSCollectionLayoutSection(group: fullGroup)
+        section.interGroupSpacing = 5 // Vertical spacing between rows
+        let layout = UICollectionViewCompositionalLayout(section: section)
+        return layout
+    }
+
 }
 
 // MARK: - CollectionView functions
@@ -66,18 +105,6 @@ extension ViewController: UICollectionViewDelegate, UICollectionViewDataSource, 
         guard let title = item?.title, let color = item?.backgroundColor else { return cell }
         cell.setup(config: CalculatorCollectionViewCell.Config(title: title, backgroundColor: color))
         return cell
-    }
-
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        CalculatorCollectionViewCell.getSize(itemsInARow: 4, item: viewModel!.items[indexPath.row])
-    }
-
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
-        5
-    }
-
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
-        4
     }
 
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {

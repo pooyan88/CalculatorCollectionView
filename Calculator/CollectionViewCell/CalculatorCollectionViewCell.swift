@@ -9,18 +9,6 @@ import UIKit
 
 class CalculatorCollectionViewCell: UICollectionViewCell {
 
-    static func getSize(itemsInARow: Int, item: CalculatorViewModel.Item) -> CGSize {
-        let totalWidth = UIScreen.main.bounds.width
-        let padding: CGFloat = 4
-        let itemWidth = (totalWidth - CGFloat(itemsInARow + 1) * padding) / CGFloat(itemsInARow)
-        let itemHeight = itemWidth
-        if item.title == "0" {
-            return CGSize(width: itemWidth * 2 + padding, height: itemHeight)
-        } else {
-            return CGSize(width: itemWidth, height: itemHeight)
-        }
-    }
-
     struct Config {
         var title: String
         var backgroundColor: String
